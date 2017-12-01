@@ -24,6 +24,9 @@ class UICurrencyTextField: UITextField, UITextFieldDelegate {
         }
     }
     
+    /*
+     public api to set and get the doubled value of .value
+     */
     public var doubleValue: Double {
         get {
             let doubled = Double(value)
@@ -39,10 +42,10 @@ class UICurrencyTextField: UITextField, UITextFieldDelegate {
     
     // MARK: - RETURN VALUES
     
-    init(doubledValue: Double, delegate: UICurrencyTextFieldDelegate) {
+    init(doubledValue double: Double, delegate: UICurrencyTextFieldDelegate) {
         super.init(frame: CGRect())
         
-        //TODO: map doubledValue to a decimal-less int
+        self.doubleValue = double
         self.currencyDelegate = delegate
     }
     
@@ -62,29 +65,30 @@ class UICurrencyTextField: UITextField, UITextFieldDelegate {
     // MARK: Text Field Delegate
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        /*concatinate new intergered strings to the least significant digit by checking if replaementString only contains integer characters*/
         /// a string that contains non-integers
         let stringInts = string.filter({ Int(String($0)) == nil })
         if (stringInts).count > 0 { //Contains a non-int
             return false
         } else { //all ints, or backspace
-            if string != "" {
+            if string != "" { //does not equal backspace
                 let collectionOfInts = string
                 var stringValue = String(value)
                 stringValue += collectionOfInts
-                if let newValue = Int(stringValue) { //can overflow
+                if let newValue = Int(stringValue) { //may overflow
                     value = newValue
-                }
+                } //else number does not get appended
             } else { //Backspace
                 value = value / 10
             }
             updateText()
-            
-            return false
         }
+        
+        return false
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
-        currencyDelegate?.textField?(self, didFinishWithValue: doubleValue)
+        currencyDelegate?.textField?(self, didFinishWithValue: doubleValue) //notify the currency delegate of dismissing the keyboard
     }
     
     // MARK: - IBACTIONS
